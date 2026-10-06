@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<meta name="referrer" content="no-referrer">
+<title>ファイルアプリで開く</title>
+<style>
+  body { margin: 0; padding: 40px 20px; font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+         background: #faf6f2; color: #3a3330; text-align: center; }
+  #name { font-size: 15px; line-height: 1.6; word-break: break-all; color: #6b625d; }
+  #go { display: block; max-width: 340px; margin: 28px auto; padding: 18px 12px; border-radius: 14px;
+        background: #c9786e; color: #fff; font-size: 20px; font-weight: 600; text-decoration: none; }
+  .hint { font-size: 14px; line-height: 1.7; color: #8a817c; }
+</style>
+</head>
+<body>
+<p id="name">フォルダを開いています…</p>
+<a id="go" href="#">📂 ファイルアプリで開く</a>
+<p class="hint">自動で開かないときは、上のボタンを押してください。<br>
+それでも開かないときは、このページをSafariで開いてから押してください。</p>
+<script>
+(function () {
+  // # の後ろ＝iCloud Drive からの相対パス（例: #美容/画像投稿/2026-10-06_xxx）。
+  // # 以降はブラウザの中だけで使われ、サーバーには送られない。
+  // 開く先は iPhone の iCloud Drive の中に限る（ほかのサイトやアプリへは飛ばさない）。
+  var ROOT = "shareddocuments:///private/var/mobile/Library/Mobile%20Documents/com~apple~CloudDocs/";
+  var parts = [];
+  try {
+    parts = decodeURIComponent(location.hash.slice(1)).split("/").filter(function (s) {
+      return s && s !== "." && s !== "..";
+    });
+  } catch (e) {}
+  var name = document.getElementById("name"), go = document.getElementById("go");
+  if (!parts.length) {
+    name.textContent = "開くフォルダが指定されていません";
+    go.style.display = "none";
+    return;
+  }
+  var url = ROOT + parts.map(encodeURIComponent).join("/");
+  name.textContent = "iCloud Drive › " + parts.join(" › ");
+  go.href = url;
+  location.href = url;
+})();
+</script>
+</body>
+</html>
